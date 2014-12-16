@@ -13,13 +13,17 @@ module JsonConfig
   json_str = File.open(CONFIGPATH, "rb").read
   @json = JSON.parse(json_str);
 
-  def JsonConfig.fromFiles
+  def JsonConfig.from_files
     @json["links"].keys
   end
-  def JsonConfig.toFiles
+  def JsonConfig.to_files
     @json["links"].values
   end
-
+  def JsonConfig.each_file
+    @json["links"].each_pair do |key, value|
+      yield key, value
+    end
+  end
 end
 
 def user_says_yes?
@@ -60,7 +64,7 @@ class Linker
     @files
   end
 
-  def link(fromA, toB) 
+  def Linker.link(fromA, toB) 
     if !File.exists?(fromA)
       throw ("file " + fromA + " does not exist")
     end
@@ -70,6 +74,8 @@ class Linker
         return false
       end
     end
+    fromA = File.expand_path(fromA)
+    toB = File.expand_path(toB)
     `ln -s #{fromA} #{toB}`
   end
 
@@ -82,19 +88,19 @@ end
 
 
 puts "==========================="
-puts JsonConfig.fromFiles
-puts JsonConfig.toFiles
+# puts JsonConfig.from_files
+# puts JsonConfig.to_files
 
-linker = Linker.new
+printf "Linking\n   "
+JsonConfig.each_file { | from_file, to_file |
+  printf "%s to %s\n   ", from_file, to_file
+  Linker.link(from_file, to_file)
+}
+puts ""
+puts "Linking completed."
 
-puts "Files to be linked"
-linker.getFilesToLink.each do |file|
-  puts "   " + file
-end
-
-
-puts "Linking"
-linker.getFilesToLink.each do |file|
-  printf "   Link %s :: %s\n", file, "~"
-  linker.link(file, "~")
-end
+# puts "Linking"
+# linker.getFilesToLink.each do |file|
+#   printf "   Link %s :: %s\n", file, "~"
+#   linker.link(file, "~")
+# end
