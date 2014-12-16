@@ -18,4 +18,17 @@ Yet another dotfile installer. Dotphile's siblings include [DotBot](https://gith
 3. Run the script to symlink it back to `~/.bash_profile`
 4. (Repeat for as many dotfiles as you like)
 
+### Config script
+
+Dotphile uses a JSON configuration file. It might look something like this:
+
+```JSON
+{
+  "links": {
+    "./.bash_profile" : "~/.bash_profile",
+    "./.gitconfig"    : "~/.gitconfig",
+    "./.vimrc"        : "~/.vimrc"
+  }
+}
+```
 
