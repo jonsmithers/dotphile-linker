@@ -1,4 +1,27 @@
 #!/usr/bin/env ruby
+require 'json'
+
+CONFIGPATH = "./config.json"
+
+module JsonConfig
+  if !File.exists?(CONFIGPATH) 
+    puts "NO CONFIG FILE"
+    puts "Creating config at " + File.absolute_path(CONFIGPATH)
+    File.open(CONFIGPATH, "w") {|f| f.write("{\n\t\"links\": {\n\t\t\n\t}\n}")}
+  end
+
+  json_str = File.open(CONFIGPATH, "rb").read
+  @json = JSON.parse(json_str);
+
+  def JsonConfig.fromFiles
+    @json["links"].keys
+  end
+  def JsonConfig.toFiles
+    @json["links"].values
+  end
+
+end
+
 def user_says_yes?
   input = gets.chomp
   if (input != "" && "yY".include?(input)) || "yes" == input.downcase
@@ -31,7 +54,10 @@ class Linker
   def initialize
     # grab all files in/beneath working directory which end in symlink
     @files = Dir[Dir.getwd + "/**/*symlink"]
-    puts @files
+  end
+
+  def getFilesToLink
+    @files
   end
 
   def link(fromA, toB) 
@@ -44,12 +70,31 @@ class Linker
         return false
       end
     end
-
     `ln -s #{fromA} #{toB}`
   end
+
+  # def linkAll()
+  #   getFilesToLink().each do |file| 
+  #     link (file, )
+  #   end
+  # end
 end
 
 
 puts "==========================="
-l = Linker.new
-l.link("./folder/myfile", "./destination")
+puts JsonConfig.fromFiles
+puts JsonConfig.toFiles
+
+linker = Linker.new
+
+puts "Files to be linked"
+linker.getFilesToLink.each do |file|
+  puts "   " + file
+end
+
+
+puts "Linking"
+linker.getFilesToLink.each do |file|
+  printf "   Link %s :: %s\n", file, "~"
+  linker.link(file, "~")
+end
