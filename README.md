@@ -1,16 +1,21 @@
-DotPhile
+Dotphile
 ===========
 
-Yet another dotfile installer. This one tries to be real simple and trustworthy.
+Yet another dotfile installer. Dotphile's siblings include [DotBot](https://github.com/anishathalye/dotbot), [rcm](https://github.com/thoughtbot/rcm), and [holman dotfiles](https://github.com/holman/dotfiles). This one tries to be simple, adoptable, and trustworthy.
 
-### To start using DotPhile
+### To start using Dotphile
 
-1. Create a directory (say, `~/.dotfiles`). 
-2. Place the ruby script in said directory.
-3. Run the script once to generate a starting config file.
-4. Move a dotfile (say, `~/.bash_profile`) to said directory.
-5. Add this line inside the config file: `./.bash_profile : ~/.bash_profile`
-6. Run the script to symlink it back to `~/.bash_profile`
-7. Repeat for as many dotfiles as you like.
+###### First-time steps
+
+1. Create a directory (say, `~/.dotfiles`)
+2. Place the script in said directory
+3. Run the script once to generate a starting config file
+
+###### For each dotfile
+
+1. Move a dotfile (say, `~/.bash_profile`) to your dotfiles directory
+2. Add this line inside the config file: `./.bash_profile : ~/.bash_profile`
+3. Run the script to symlink it back to `~/.bash_profile`
+4. (Repeat for as many dotfiles as you like)
 
 
