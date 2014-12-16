@@ -8,6 +8,7 @@ module JsonConfig
     puts "NO CONFIG FILE"
     puts "Creating config at " + File.absolute_path(CONFIGPATH)
     File.open(CONFIGPATH, "w") {|f| f.write("{\n\t\"links\": {\n\t\t\n\t}\n}")}
+    puts "==========================="
   end
 
   json_str = File.open(CONFIGPATH, "rb").read
@@ -52,55 +53,44 @@ module OS
   end
 end #http://stackoverflow.com/questions/170956/how-can-i-find-which-operating-system-my-ruby-program-is-running-on
 
-class Linker
-  @files = nil
+module Linker
 
-  def initialize
-    # grab all files in/beneath working directory which end in symlink
-    @files = Dir[Dir.getwd + "/**/*symlink"]
-  end
-
-  def getFilesToLink
-    @files
-  end
-
+  # Creates a symbolic link, such that file toB points to file fromA. Throws an 
+  # exception if fromA does not exist. Prints an error message if toB already 
+  # exists.
+  # Params:
+  # +fromA+::
+  # +toB+::
   def Linker.link(fromA, toB) 
+    fromA = File.expand_path(fromA)
+    toB = File.expand_path(toB)
     if !File.exists?(fromA)
       throw ("file " + fromA + " does not exist")
     end
-    if File.exist?(toB)
-      printf "Do you want to overwrite %s? (y/n)",  toB
-      if !user_says_yes?
-        return false
-      end
-    end
-    fromA = File.expand_path(fromA)
-    toB = File.expand_path(toB)
-    `ln -s #{fromA} #{toB}`
-  end
 
-  # def linkAll()
-  #   getFilesToLink().each do |file| 
-  #     link (file, )
-  #   end
-  # end
+    # (this code is redundant)
+    # if File.exist?(toB)
+    #   printf "Do you want to overwrite %s? (y/n)",  toB
+    #   if !user_says_yes?
+    #     return false
+    #   end
+    # end
+
+    # bash's ln will not go forward unless file does not exist
+    return system("ln -s #{fromA} #{toB}")
+  end
 end
 
 
-puts "==========================="
-# puts JsonConfig.from_files
-# puts JsonConfig.to_files
+TAB_SP = "   ";
 
-printf "Linking\n   "
+puts "Linking"
 JsonConfig.each_file { | from_file, to_file |
-  printf "%s to %s\n   ", from_file, to_file
-  Linker.link(from_file, to_file)
+  printf TAB_SP
+  success = Linker.link(from_file, to_file)
+  if success
+    printf "%s to %s\n", from_file, to_file
+  end
 }
 puts ""
 puts "Linking completed."
-
-# puts "Linking"
-# linker.getFilesToLink.each do |file|
-#   printf "   Link %s :: %s\n", file, "~"
-#   linker.link(file, "~")
-# end
